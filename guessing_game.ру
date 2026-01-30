@@ -1,0 +1,41 @@
+import random
+import time
+
+# List of coding-related terms and their hints
+coding_terms = {
+    "variable": "A storage location paired with a name.",
+    "function": "A block of code that performs a specific task.",
+    "loop": "A structure that repeats a block of code.",
+    "array": "A collection of elements identified by index.",
+    "class": "A blueprint for creating objects in OOP.",
+    "inheritance": "A mechanism where a new class derives properties from another class.",
+    "syntax": "The set of rules that defines the combinations of symbols in a programming language.",
+    "debugging": "The process of finding and fixing errors in code."
+}
+
+def welcome():
+    print("🚀 Welcome to the Coding Guessing Game! 🎉")
+    time.sleep(1)
+    print("I’m thinking of a coding-related term. Try to guess it based on the hints!")
+
+def get_guess():
+    return input("Your guess: ").strip().lower()
+
+def coding_guessing_game():
+    welcome()
+    term, hint = random.choice(list(coding_terms.items()))
+    attempts = 0
+
+    while True:
+        attempts += 1
+        print(f"\nHint: {hint}")
+        guess = get_guess()
+        
+        if guess == term:
+            print(f"{Colors.GREEN}Congratulations! You guessed it in {attempts} attempts! 🎉{Colors.RESET}")
+            break
+        else:
+            print(f"{Colors.BLUE}Not quite! Try again.{Colors.RESET}")
+
+if __name__ == "__main__":
+    coding_guessing_game()

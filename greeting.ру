@@ -1,0 +1,61 @@
+import time
+import random
+import sys
+
+# Color text for fun
+class Colors:
+    GREEN = '\033[32m'
+    YELLOW = '\033[33m'
+    BLUE = '\033[34m'
+    PINK = '\033[35m'
+    RESET = '\033[0m'
+
+# List of cute sayings
+cute_sayings = [
+    "You are the best programmer in the galaxy! 🚀",
+    "Code runs smoother with you around. 👩‍💻👨‍💻",
+    "You're a debugging genius! 🧩",
+    "Your code has magic in it! ✨",
+    "Keep calm and code on! 💻",
+    "You write code that even computers admire. 🤖",
+]
+
+def display_welcome():
+    print(f"{Colors.BLUE}Initializing your personalized experience...{Colors.RESET}")
+    time.sleep(1)
+
+def unusual_effect(name):
+    print(f"\n{Colors.PINK}Here comes something unusual with your name...{Colors.RESET}")
+    time.sleep(1)
+    
+    # Create an unusual "name effect"
+    name_reversed = name[::-1]
+    print(f"{Colors.GREEN}Hold on tight... Here is your name in reverse: {name_reversed}{Colors.RESET}")
+    time.sleep(1)
+    
+    # Add a fun twist by changing each letter to uppercase and a random special symbol
+    transformed_name = ''.join(random.choice([char.upper(), f"@{char}"]) for char in name)
+    print(f"{Colors.YELLOW}Now your name transformed: {transformed_name}{Colors.RESET}")
+    time.sleep(1)
+
+def cute_message():
+    print(f"\n{Colors.GREEN}✨ Here's a little something special for you! ✨{Colors.RESET}")
+    time.sleep(1)
+    print(f"{Colors.PINK}{random.choice(cute_sayings)}{Colors.RESET}")
+    time.sleep(1)
+
+def main():
+    print(f"{Colors.GREEN}Welcome! Let's have some fun...{Colors.RESET}")
+    time.sleep(1)
+    
+    name = input(f"{Colors.YELLOW}Please enter your name: {Colors.RESET}")
+    print(f"\n{Colors.GREEN}Thank you, {name}! Let's see what happens...{Colors.RESET}")
+    
+    display_welcome()
+    unusual_effect(name)
+    cute_message()
+    
+    sys.exit()
+
+if __name__ == "__main__":
+    main()

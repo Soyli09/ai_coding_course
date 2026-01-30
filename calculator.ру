@@ -1,0 +1,101 @@
+import time
+import math
+import random
+import sys
+
+# Color text for fun
+class Colors:
+    GREEN = '\033[32m'
+    YELLOW = '\033[33m'
+    BLUE = '\033[34m'
+    RED = '\033[31m'
+    CYAN = '\033[36m'
+    RESET = '\033[0m'
+
+# Display a welcome animation
+def welcome_animation():
+    print(f"{Colors.CYAN}Welcome to the Cool Python Calculator! 🎉{Colors.RESET}")
+    time.sleep(1)
+    print(f"{Colors.GREEN}Loading... Please wait{Colors.RESET}", end="")
+    for _ in range(3):
+        time.sleep(0.5)
+        print(".", end="", flush=True)
+    print("\n")
+    time.sleep(0.5)
+
+# Show available operations
+def show_operations():
+    print(f"\n{Colors.YELLOW}Choose an operation from the following:{Colors.RESET}")
+    print(f"{Colors.GREEN}[1] Add (+) \n[2] Subtract (-) \n[3] Multiply (*) \n[4] Divide (/) \n[5] Exponent (^) \n[6] Square Root (√) \n[7] Exit{Colors.RESET}")
+
+# Get user choice
+def get_user_choice():
+    while True:
+        try:
+            choice = int(input(f"\n{Colors.PINK}Enter the number of the operation you want: {Colors.RESET}"))
+            if choice in range(1, 8):
+                return choice
+            else:
+                print(f"{Colors.RED}Invalid choice! Please select a valid operation.{Colors.RESET}")
+        except ValueError:
+            print(f"{Colors.RED}Please enter a number.{Colors.RESET}")
+
+# Perform calculations
+def perform_calculation(choice):
+    if choice == 1:
+        num1 = float(input(f"{Colors.GREEN}Enter the first number: {Colors.RESET}"))
+        num2 = float(input(f"{Colors.GREEN}Enter the second number: {Colors.RESET}"))
+        result = num1 + num2
+        print(f"\n{Colors.YELLOW}Result: {num1} + {num2} = {result}{Colors.RESET}")
+    
+    elif choice == 2:
+        num1 = float(input(f"{Colors.GREEN}Enter the first number: {Colors.RESET}"))
+        num2 = float(input(f"{Colors.GREEN}Enter the second number: {Colors.RESET}"))
+        result = num1 - num2
+        print(f"\n{Colors.YELLOW}Result: {num1} - {num2} = {result}{Colors.RESET}")
+    
+    elif choice == 3:
+        num1 = float(input(f"{Colors.GREEN}Enter the first number: {Colors.RESET}"))
+        num2 = float(input(f"{Colors.GREEN}Enter the second number: {Colors.RESET}"))
+        result = num1 * num2
+        print(f"\n{Colors.YELLOW}Result: {num1} * {num2} = {result}{Colors.RESET}")
+    
+    elif choice == 4:
+        num1 = float(input(f"{Colors.GREEN}Enter the first number: {Colors.RESET}"))
+        num2 = float(input(f"{Colors.GREEN}Enter the second number: {Colors.RESET}"))
+        if num2 != 0:
+            result = num1 / num2
+            print(f"\n{Colors.YELLOW}Result: {num1} / {num2} = {result}{Colors.RESET}")
+        else:
+            print(f"{Colors.RED}Error! Division by zero is not allowed.{Colors.RESET}")
+    
+    elif choice == 5:
+        num1 = float(input(f"{Colors.GREEN}Enter the base number: {Colors.RESET}"))
+        num2 = float(input(f"{Colors.GREEN}Enter the exponent: {Colors.RESET}"))
+        result = num1 ** num2
+        print(f"\n{Colors.YELLOW}Result: {num1} ^ {num2} = {result}{Colors.RESET}")
+    
+    elif choice == 6:
+        num1 = float(input(f"{Colors.GREEN}Enter the number to find the square root of: {Colors.RESET}"))
+        if num1 < 0:
+            print(f"{Colors.RED}Error! Cannot find the square root of a negative number.{Colors.RESET}")
+        else:
+            result = math.sqrt(num1)
+            print(f"\n{Colors.YELLOW}Result: √{num1} = {result}{Colors.RESET}")
+
+# Main calculator loop
+def calculator():
+    welcome_animation()
+    
+    while True:
+        show_operations()
+        choice = get_user_choice()
+        
+        if choice == 7:
+            print(f"{Colors.CYAN}Thank you for using the Cool Python Calculator! Goodbye! 👋{Colors.RESET}")
+            sys.exit()
+        
+        perform_calculation(choice)
+
+if __name__ == "__main__":
+    calculator()
