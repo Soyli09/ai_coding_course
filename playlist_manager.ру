@@ -1,0 +1,27 @@
+from datetime import date
+
+playlist_title = input("Enter playlist title: ")
+songs = []
+
+print("Add songs to your playlist.")
+print("Type 'done' when finished.\n")
+
+while True:
+    song = input("Song name: ")
+    if song.lower() == "done":
+        break
+
+    artist = input("Artist: ")
+    songs.append(f"{song} - {artist}")
+    print("Song added!\n")
+
+today = date.today()
+
+with open("playlist.txt", "w") as file:
+    file.write(f"Playlist: {playlist_title}\n")
+    file.write(f"Created on: {today}\n\n")
+
+    for index, song in enumerate(songs, start=1):
+        file.write(f"{index}. {song}\n")
+
+print("\n✅ Playlist saved to 'playlist.txt'")
