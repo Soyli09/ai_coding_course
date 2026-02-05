@@ -1,4 +1,4 @@
-# Decision Maker Program
+# Dhomework 3/decision_maker.py
 # This program helps the user decide how to study
 # It uses if / elif / else based on user answers
 
@@ -20,3 +20,4 @@ elif subject == "coding" and style == "practice":
     print("💻 Build a small project or solve coding exercises.")
 else:
     print("📖 Try reviewing notes and doing light practice.")
+
