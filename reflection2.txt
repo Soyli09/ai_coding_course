@@ -1,0 +1,9 @@
+When is a for loop better than a while loop?
+- When I know how many times the loop should run.
+
+When is a while loop better?
+- When the loop should continue until a condition is met.
+
+What bug did you run into?
+- I forgot to convert input to int, which caused a comparison error.
+- I fixed it using int(input()).

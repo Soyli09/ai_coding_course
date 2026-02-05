@@ -1,0 +1,11 @@
+Why did you split it into these functions?
+- Each function does one clear job, making the code easier to read and fix.
+
+Which function took multiple tries?
+- determine_winner() because the conditions were tricky.
+
+How did functions improve your code?
+- They avoided repetition and made the main program very clean.
+
+What AI prompt helped you most?
+- "Break Rock Paper Scissors into Python functions"
