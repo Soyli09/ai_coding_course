@@ -1,0 +1,39 @@
+{
+    "users": {
+        "soyli": {
+            "password": "1234",
+            "bio": "2",
+            "saved_events": [],
+            "applications": {
+                "Community Garden Build": {
+                    "status": "Pending",
+                    "experience": "new"
+                }
+            }
+        },
+        "\u044b": {
+            "password": "1234",
+            "bio": "\u0443",
+            "saved_events": [],
+            "applications": {}
+        }
+    },
+    "events": [
+        {
+            "name": "Community Garden Build",
+            "description": "Help us build a community garden in the neighborhood.",
+            "needed": 10
+        },
+        {
+            "name": "Beach Cleanup",
+            "description": "Join us to clean the local beach and protect wildlife.",
+            "needed": 20
+        },
+        {
+            "name": "Tree Planting",
+            "description": "Plant trees to restore our urban green spaces.",
+            "needed": 15
+        }
+    ],
+    "organizations": {}
+}
