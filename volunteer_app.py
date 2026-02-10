@@ -1,40 +1,50 @@
-# volunteering_app_terminal_api_with_settings.py
-from flask import Flask, jsonify, request
-import threading
 
-# ================= MOCK DATABASE =================
+# volunteering_cli_api.py
+import requests
+import json
+import random
+import os
+
+# ================= FILE STORAGE =================
+EVENTS_FILE = "saved_events.txt"
+
+# ================= DATA =================
 USERS = {}
 CURRENT_USER = None
-
-EVENTS = [
-    "Community Garden Build",
-    "Beach Cleanup Day",
-    "Tree Planting Drive",
-    "Red Crescent Food Aid",
-    "American Center Book Fair",
-    "Community Tutoring",
-    "Elderly Support Visit",
-    "Animal Shelter Help",
-    "Hospital Volunteer Program",
-    "Recycling Awareness Event",
-    "Charity Marathon",
-    "Refugee Support Program",
-    "WES Career Workshop",
-    "EU Youth Conference",
-    "Library Digitization"
-]
-
+EVENTS = []
 APPLICATIONS = {}
-SAVED = []
+SAVED = {}
 
-SETTINGS_INFO = {
-    "About Us": "We connect volunteers with community events around the world.",
-    "Contacts": "Email: soylishkamerdanova@gmail.com\nPhone: +99362760495",
-    "Help Center": "Ask questions about volunteering by contacting our email or checking our FAQ.",
-    "Privacy Policy": "We respect your privacy and will never share your information without consent."
-}
+# ================= API FUNCTIONS =================
+API_URL = "https://randomuser.me/api/?results=10"  # simulate events with random names
 
-# ================= CLI FUNCTIONS =================
+def fetch_events_from_api():
+    try:
+        response = requests.get(API_URL, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+        events = [f"Volunteer Event: {user['name']['first']} {user['name']['last']}" for user in data['results']]
+        print("\nFetched events from API successfully!")
+        save_events_to_file(events)
+        return events
+    except Exception as e:
+        print("\nCould not fetch events from API. Using saved events.")
+        return load_events_from_file()
+
+def save_events_to_file(events):
+    existing = set(load_events_from_file())
+    with open(EVENTS_FILE, "a", encoding="utf-8") as f:
+        for e in events:
+            if e not in existing:
+                f.write(e + "\n")
+
+def load_events_from_file():
+    if not os.path.exists(EVENTS_FILE):
+        return []
+    with open(EVENTS_FILE, "r", encoding="utf-8") as f:
+        return [line.strip() for line in f if line.strip()]
+
+# ================= USER FUNCTIONS =================
 def signup():
     global CURRENT_USER
     username = input("Enter username: ").strip()
@@ -48,6 +58,7 @@ def signup():
     USERS[username] = password
     CURRENT_USER = username
     APPLICATIONS[username] = {}
+    SAVED[username] = []
     print(f"Account created for {username}")
 
 def login():
@@ -60,97 +71,82 @@ def login():
     CURRENT_USER = username
     print(f"Logged in as {username}")
 
+# ================= EVENTS =================
 def list_events():
+    global EVENTS
+    if not EVENTS:
+        EVENTS.extend(fetch_events_from_api())
     print("\nAvailable Events:")
     for idx, event in enumerate(EVENTS, 1):
         print(f"{idx}. {event}")
-    print()
 
 def apply_event():
     list_events()
+    if not EVENTS:
+        print("No events available.")
+        return
     try:
-        idx = int(input("Enter event number to apply: ").strip())
-        if idx < 1 or idx > len(EVENTS):
-            print("Invalid choice!")
+        idx = int(input("Enter event number to apply: ").strip()) - 1
+        if idx < 0 or idx >= len(EVENTS):
+            print("Invalid choice.")
             return
-        choice = EVENTS[idx - 1]
+        event = EVENTS[idx]
+        name = input("Full Name: ").strip()
+        phone = input("Phone Number: ").strip()
+        email = input("Email: ").strip()
+        experience = input("Experience: ").strip()
+        if not experience:
+            print("Experience is required!")
+            return
+        APPLICATIONS.setdefault(CURRENT_USER, {})[event] = {
+            "status": "Pending",
+            "name": name,
+            "phone": phone,
+            "email": email,
+            "experience": experience
+        }
+        print(f"Application for '{event}' submitted!")
     except ValueError:
-        print("Please enter a valid number!")
-        return
-
-    experience = input("Experience (required): ").strip()
-    if not experience:
-        print("Experience is required!")
-        return
-
-    data = {
-        "status": "Pending",
-        "name": input("Full Name: ").strip(),
-        "phone": input("Phone Number: ").strip(),
-        "email": input("Email: ").strip(),
-        "experience": experience,
-        "link": input("Profile Link (optional): ").strip(),
-        "bio": input("Bio (optional): ").strip()
-    }
-    APPLICATIONS.setdefault(CURRENT_USER, {})[choice] = data
-    print(f"Application for '{choice}' sent!")
+        print("Invalid input.")
 
 def save_event():
     list_events()
-    try:
-        idx = int(input("Enter event number to save: ").strip())
-        if idx < 1 or idx > len(EVENTS):
-            print("Invalid choice!")
-            return
-        choice = EVENTS[idx - 1]
-    except ValueError:
-        print("Please enter a valid number!")
+    if not EVENTS:
         return
-
-    SAVED.append(choice)
-    print(f"'{choice}' saved!")
+    try:
+        idx = int(input("Enter event number to save: ").strip()) - 1
+        if idx < 0 or idx >= len(EVENTS):
+            print("Invalid choice.")
+            return
+        event = EVENTS[idx]
+        SAVED.setdefault(CURRENT_USER, []).append(event)
+        print(f"'{event}' saved!")
+    except ValueError:
+        print("Invalid input.")
 
 def view_profile():
     print(f"\nUser: {CURRENT_USER}")
     apps = APPLICATIONS.get(CURRENT_USER, {})
     if not apps:
-        print("No applications yet")
+        print("No applications yet.")
     else:
-        for event, d in apps.items():
-            print(f"\nEvent: {event}\nStatus: {d['status']}\nName: {d['name']}\nEmail: {d['email']}\nPhone: {d['phone']}\nExperience: {d['experience']}")
-            if d.get("link"):
-                print(f"Link: {d['link']}")
-            if d.get("bio"):
-                print(f"Bio: {d['bio']}")
-    if SAVED:
-        print(f"\nSaved Events: {', '.join(SAVED)}")
-    print()
+        for event, info in apps.items():
+            print(f"\nEvent: {event}")
+            for key, val in info.items():
+                print(f"{key.capitalize()}: {val}")
+    saved = SAVED.get(CURRENT_USER, [])
+    if saved:
+        print(f"\nSaved Events: {', '.join(saved)}")
 
-def settings_menu():
-    print("\n--- Settings ---")
-    for idx, key in enumerate(SETTINGS_INFO.keys(), 1):
-        print(f"{idx}. {key}")
-    print(f"{len(SETTINGS_INFO) + 1}. Back")
-    choice = input("Choose an option: ").strip()
-    try:
-        idx = int(choice)
-        if idx == len(SETTINGS_INFO) + 1:
-            return
-        key = list(SETTINGS_INFO.keys())[idx - 1]
-        print(f"\n{key}:\n{SETTINGS_INFO[key]}")
-    except (ValueError, IndexError):
-        print("Invalid choice!")
-
-def main_menu_cli():
-    global CURRENT_USER
+# ================= MAIN MENU =================
+def main_menu():
     while True:
         print("\n--- Main Menu ---")
         print("1. List Events")
         print("2. Apply for Event")
         print("3. Save Event")
         print("4. View Profile")
-        print("5. Settings")
-        print("6. Logout")
+        print("5. Logout")
         choice = input("Choose an option: ").strip()
         if choice == "1":
             list_events()
@@ -161,14 +157,12 @@ def main_menu_cli():
         elif choice == "4":
             view_profile()
         elif choice == "5":
-            settings_menu()
-        elif choice == "6":
-            print("Logged out")
-            CURRENT_USER = None
+            print("Logged out.")
             break
         else:
-            print("Invalid choice!")
+            print("Invalid choice.")
 
+# ================= START APP =================
 def start_cli():
     while True:
         print("\n=== Volunteering App ===")
@@ -179,61 +173,19 @@ def start_cli():
         if choice == "1":
             signup()
             if CURRENT_USER:
-                main_menu_cli()
+                main_menu()
         elif choice == "2":
             login()
             if CURRENT_USER:
-                main_menu_cli()
+                main_menu()
         elif choice == "3":
             print("Goodbye!")
             break
         else:
-            print("Invalid choice!")
+            print("Invalid choice.")
 
-# ================= API =================
-app = Flask(__name__)
-
-@app.route("/api/events", methods=["GET"])
-def api_events():
-    return jsonify(EVENTS)
-
-@app.route("/api/apply", methods=["POST"])
-def api_apply():
-    data = request.json
-    username = data.get("username")
-    event = data.get("event")
-    experience = data.get("experience")
-    if not username or not event or not experience:
-        return jsonify({"error": "Missing required fields"}), 400
-    if username not in USERS:
-        return jsonify({"error": "User does not exist"}), 404
-    if event not in EVENTS:
-        return jsonify({"error": "Event does not exist"}), 404
-    APPLICATIONS.setdefault(username, {})[event] = data
-    return jsonify({"message": f"Application for {event} received"})
-
-@app.route("/api/profile/<username>", methods=["GET"])
-def api_profile(username):
-    if username not in USERS:
-        return jsonify({"error": "User not found"}), 404
-    return jsonify({
-        "applications": APPLICATIONS.get(username, {}),
-        "saved_events": SAVED
-    })
-
-@app.route("/api/settings/<key>", methods=["GET"])
-def api_settings(key):
-    info = SETTINGS_INFO.get(key)
-    if not info:
-        return jsonify({"error": "Invalid setting"}), 404
-    return jsonify({key: info})
-
-def run_api():
-    app.run(port=5000)
-
-# ================= START APP =================
+# ================= RUN =================
 if __name__ == "__main__":
-    # Run API in a separate thread
-    threading.Thread(target=run_api, daemon=True).start()
-    # Start CLI
+    EVENTS.extend(fetch_events_from_api())
     start_cli()
+
